@@ -58,11 +58,11 @@ static uint8_t DEBUG=0; // if DEBUG =1 It activates the USART1 for Testing
 static uint8_t POWER[2]={0x6B,0}; //6B is the power management register
 static uint8_t DATA_REGISTER=0x3B;
 static const uint16_t MPU_ADDRESS=0xD2;
-static unsigned char MPU_6050_INIT_STRING[]="Initialisng Sensors\r\n";
-static unsigned char READING_START[]="READING_STARTED ";
-static unsigned char READING_END[]="READING_ENDED\r\n";
-static unsigned char RECORDING_START[]="BATCH STARTED\r\n";
-static unsigned char RECORDING_END[]="BATCH ENDED\r\n";
+static unsigned char MPU_6050_INIT_STRING[]="\r\nInitialisng Sensors";
+static unsigned char READING_START[]="\r\nREADING_STARTED ";
+static unsigned char READING_END[]="READING_ENDED";
+static unsigned char RECORDING_START[]="\r\nBATCH STARTED\r\n";
+static unsigned char RECORDING_END[]="\r\nBATCH ENDED\r\n";
 static uint8_t NO_OF_SENSORS=5;
 static int PRED_BTN = 1;
 /* USER CODE END PV */
@@ -94,6 +94,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 	int SENSOR_NO;
+	
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -133,19 +134,21 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		
+	
 		if (PRED_BTN == 1 && HAL_GPIO_ReadPin(TOUCH_INPUT_GPIO_Port,TOUCH_INPUT_Pin))
   {
     if(DEBUG)
 		{HAL_UART_Transmit(&huart1,RECORDING_START,sizeof(RECORDING_START),100);}
 		
 		HAL_UART_Transmit(&huart3,RECORDING_START,sizeof(RECORDING_START),100);
+		
 		PRED_BTN=0;
+		
 		HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);
   
 	}
 		
-		if(HAL_GPIO_ReadPin(TOUCH_INPUT_GPIO_Port,TOUCH_INPUT_Pin))
+		else if(HAL_GPIO_ReadPin(TOUCH_INPUT_GPIO_Port,TOUCH_INPUT_Pin))
 		{
 			
 					if(DEBUG)
@@ -153,36 +156,39 @@ int main(void)
 						HAL_UART_Transmit(&huart1,READING_START,sizeof(READING_START),100);
 					}
 					
-					HAL_UART_Transmit(&huart3,READING_START,sizeof(READING_START),100);
+					while(HAL_UART_Transmit(&huart3,READING_START,sizeof(READING_START),100)!=HAL_OK)
+					{;}
+					
 					for(SENSOR_NO=1;SENSOR_NO<=NO_OF_SENSORS;SENSOR_NO++)
 					{
 							TRANSMIT_BT(SENSOR_NO);
 					
 					}
-					
-					//TRANSMIT_BT(2);
 					if(DEBUG)
 					{
 						HAL_UART_Transmit(&huart1,READING_END,sizeof(READING_END),100);
 					}
 					
-					HAL_UART_Transmit(&huart3,READING_END,sizeof(READING_END),100);	
+					while(HAL_UART_Transmit(&huart3,READING_END,sizeof(READING_END),100)!=HAL_OK)
+					{;}	
 					
 					
 		}
 		
-		if (PRED_BTN == 0 && !(HAL_GPIO_ReadPin(TOUCH_INPUT_GPIO_Port,TOUCH_INPUT_Pin)))
+		
+		//IF BATCH ENDS
+		
+		else if (PRED_BTN == 0 && !(HAL_GPIO_ReadPin(TOUCH_INPUT_GPIO_Port,TOUCH_INPUT_Pin)))
 		{
-    if(DEBUG)
-		{HAL_UART_Transmit(&huart1,RECORDING_END,sizeof(RECORDING_END),100);}
-		
-		HAL_UART_Transmit(&huart3,RECORDING_END,sizeof(RECORDING_END),100);
-		PRED_BTN=1;
-		HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);
+			if(DEBUG)
+			{HAL_UART_Transmit(&huart1,RECORDING_END,sizeof(RECORDING_END),100);}
+			
+			while(HAL_UART_Transmit(&huart3,RECORDING_END,sizeof(RECORDING_END),100)!=HAL_OK)
+			{;}
+			PRED_BTN=1;
+			HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);
 		
 		}
-		
-		
 		
 		
 		
@@ -425,7 +431,7 @@ static void ACTIVATE_SENSOR(uint8_t Sensor_Number)
 			HAL_GPIO_WritePin(GPIOB,SENSOR_3_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_4_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_5_Pin,GPIO_PIN_SET);
-			HAL_Delay(50);
+			//HAL_Delay(50);
 			break;
 		case 2:
 			HAL_GPIO_WritePin(SENSOR_1_GPIO_Port,SENSOR_1_Pin,GPIO_PIN_SET);
@@ -433,7 +439,7 @@ static void ACTIVATE_SENSOR(uint8_t Sensor_Number)
 			HAL_GPIO_WritePin(GPIOB,SENSOR_3_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_4_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_5_Pin,GPIO_PIN_SET);
-			HAL_Delay(50);
+			//HAL_Delay(50);
 			break;
 		case 3:
 			HAL_GPIO_WritePin(SENSOR_1_GPIO_Port,SENSOR_1_Pin,GPIO_PIN_SET);
@@ -441,7 +447,7 @@ static void ACTIVATE_SENSOR(uint8_t Sensor_Number)
 			HAL_GPIO_WritePin(GPIOB,SENSOR_3_Pin,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_4_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_5_Pin,GPIO_PIN_SET);
-			HAL_Delay(50);
+			//HAL_Delay(50);
 			break;
 		case 4:
 			HAL_GPIO_WritePin(SENSOR_1_GPIO_Port,SENSOR_1_Pin,GPIO_PIN_SET);
@@ -449,7 +455,7 @@ static void ACTIVATE_SENSOR(uint8_t Sensor_Number)
 			HAL_GPIO_WritePin(GPIOB,SENSOR_3_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_4_Pin,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_5_Pin,GPIO_PIN_SET);
-			HAL_Delay(50);
+			//HAL_Delay(50);
 			break;
 		case 5:
 			HAL_GPIO_WritePin(SENSOR_1_GPIO_Port,SENSOR_1_Pin,GPIO_PIN_SET);
@@ -457,7 +463,7 @@ static void ACTIVATE_SENSOR(uint8_t Sensor_Number)
 			HAL_GPIO_WritePin(GPIOB,SENSOR_3_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_4_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_5_Pin,GPIO_PIN_RESET);
-			HAL_Delay(50);
+			//HAL_Delay(50);
 			break;
 	 	default:  //DEFAULT DEACTIVATES THE SENSOR MULTIPLEXERS
 			HAL_GPIO_WritePin(SENSOR_1_GPIO_Port,SENSOR_1_Pin,GPIO_PIN_SET);
@@ -465,7 +471,7 @@ static void ACTIVATE_SENSOR(uint8_t Sensor_Number)
 			HAL_GPIO_WritePin(GPIOB,SENSOR_3_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_4_Pin,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOB,SENSOR_5_Pin,GPIO_PIN_SET);
-			HAL_Delay(50);
+			//HAL_Delay(50);
 			break;
 	
 	}	
