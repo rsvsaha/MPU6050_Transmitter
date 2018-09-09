@@ -17,6 +17,7 @@ def add_sample(sample_name,sample_num,SERIAL_PORT="COM4",BAUD_RATE=9600,TIME_OUT
     output=[]
     #current_sample=0
     root="Samples"
+    recording=False
     try:
         while True:
             line=ser.readline().decode("UTF-8").replace("\r\n","")#This is very important
@@ -25,7 +26,8 @@ def add_sample(sample_name,sample_num,SERIAL_PORT="COM4",BAUD_RATE=9600,TIME_OUT
                 print("Initialisng Sensors")
             elif line=="BATCH STARTED":
                 print("Started Recording")
-            elif line=="BATCH ENDED":
+                recording=True
+            elif line=="BATCH ENDED" and recording==True:
                 print("Done Recording")
                 filename="{word}_sample_{sample_no}.txt".format(word=sample_name,sample_no=sample_num)
                 path=root+os.sep+filename
