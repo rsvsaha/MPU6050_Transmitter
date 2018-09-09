@@ -36,7 +36,7 @@ def add_sample(sample_name,sample_num,SERIAL_PORT="COM4",BAUD_RATE=9600,TIME_OUT
                 f.close()
                 ser.close()
                 break
-            else:
+            elif recording:
                 output.append(line)
     except KeyboardInterrupt:
         ser.close()
