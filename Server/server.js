@@ -22,7 +22,7 @@ app.post('/', (req, res) => {
 
 	//Change the file directory as required
 	//"req.body.Body" should not be changed
-	fs.writeFile("C:\\Users\\HOME\\Desktop\\testFile.txt", req.body.Body, function(err) {
+	fs.writeFile("C:\\Users\\HOME\\Desktop\\testFileNEW.txt", req.body.Body, 'utf8', function(err) {
   	if(err) {
   		return console.log(err);
   	}
