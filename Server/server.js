@@ -39,6 +39,6 @@ app.post('/train', (req, res) => {
   			return console.log(err);
   		}
     })
-	res.send("Received");
+	res.send("Received " + req.body.Name);
 });
 
