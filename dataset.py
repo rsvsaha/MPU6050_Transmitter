@@ -1,13 +1,12 @@
-
-
 import os,process
 import numpy as np
 from sklearn.externals import joblib
-def create(SAVE=False):
+def create(SAVE=True):
     x_data=[]
     y_data=[]
     count=0
-    d={}
+    Encoder={}
+    Decoder={}
     root="Samples"
     
     
@@ -23,21 +22,32 @@ def create(SAVE=False):
             
             reqd_name=name.split('_')[0]
             
-            if reqd_name not in d.keys():
-                d[reqd_name]=count
+            if reqd_name not in Encoder.keys():
+                Encoder[reqd_name]=count
                 count=count+1
                 
-            y_data.append(d[reqd_name])
+            y_data.append(Encoder[reqd_name])
+    
+    
+    
     x_data=np.array(x_data)
-    y_data=np.array(x_data)
-    DATA=(x_data,y_data)
+    y_data=np.array(y_data)
+    
+    
+    
+    for key in Encoder.keys():
+        Decoder[Encoder[key]]=key
+    
+    
+    Data=(x_data,y_data)
+    
     if SAVE==True:
-        joblib.dump(DATA,"Dataset.pkl")
-        joblib.dump(d,"Word_to_Int_Dictionary.pkl")
-    return DATA
+        joblib.dump(Data,"Dataset.pkl")
+        joblib.dump(Encoder,"Word_to_Int_Dictionary.pkl")
+        joblib.dump(Decoder,"Int_to_Word_Dictionary.pkl")
+    
+    return (x_data,y_data,Decoder)
     
     #print(d)
     #print(len(x_data[0]))   
     #print(len(y_data))         
-
-create() 
