@@ -28,6 +28,8 @@ def create(SAVE=False):
                 count=count+1
                 
             y_data.append(d[reqd_name])
+    x_data=np.array(x_data)
+    y_data=np.array(x_data)
     DATA=(x_data,y_data)
     if SAVE==True:
         joblib.dump(DATA,"Dataset.pkl")
