@@ -6,18 +6,22 @@ from scipy.interpolate import interp1d
 
 class Sample:
     def __init__(self,accx,accy,accz,gyx,gyy,gyz):
-        self.accx=accx
-        self.accy=accy
-        self.accz=accz
-        self.gyx=gyx
-        self.gyy=gyy
-        self.gyz=gyz
+        self.accx=np.array(accx)
+        self.accy=np.array(accy)
+        self.accz=np.array(accz)
+        self.gyx=np.array(gyx)
+        self.gyy=np.array(gyy)
+        self.gyz=np.array(gyz)
         
     def load_from_file(filename,size_fit=50):
             data_raw=[]
             acc_x=[]
-            acc_y=acc_z=gyro_x=gyro_y=gyro_z=[]
-            acc_x_stretch=acc_y_stretch=acc_z_stretch=gyro_x_stretch=gyro_y_stretch=gyro_z_stretch=[]
+            acc_y=[]
+            acc_z=[]
+            gyro_x=[]
+            gyro_y=[]
+            gyro_z=[]
+            (acc_x_stretch,acc_y_stretch,acc_z_stretch,gyro_x_stretch,gyro_y_stretch,gyro_z_stretch)=([],[],[],[],[],[])
             (facc_x,facc_y,facc_z,fgyro_x,fgyro_y,fgyro_z)=([],[],[],[],[],[])
             j=0
             
@@ -55,7 +59,7 @@ class Sample:
                 fgyro_x.append(fgyro_x1)
                 fgyro_y1=interp1d(length_along_x_axis,gyro_y[i])
                 fgyro_y.append(fgyro_y1)
-                fgyro_z1=interp1d(length_along_x_axis,gyro_z)
+                fgyro_z1=interp1d(length_along_x_axis,gyro_z[i])
                 fgyro_z.append(fgyro_z1)
             
             new_length_along_x_axis=np.linspace(0,data.shape[0],size_fit)
@@ -70,7 +74,7 @@ class Sample:
             #print(len(acc_x_stretch[0]))
             
             
-            print(acc_x_stretch[0])
+            #print(acc_x_stretch[0])
             return Sample(acc_x_stretch,acc_y_stretch,acc_z_stretch,gyro_x_stretch,gyro_y_stretch,gyro_z_stretch)
         
 #if __name__=="__main__":
