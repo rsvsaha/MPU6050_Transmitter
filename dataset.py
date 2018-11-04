@@ -2,8 +2,8 @@
 
 import os,process
 import numpy as np
-
-def create():
+from sklearn.externals import joblib
+def create(SAVE=False):
     x_data=[]
     y_data=[]
     count=0
@@ -28,7 +28,12 @@ def create():
                 count=count+1
                 
             y_data.append(d[reqd_name])
-        
+     DATA=(x_data,y_data)
+    if SAVE==True:
+        joblib.dump(DATA,"Dataset.pkl")
+        joblib.dump(d,"Word_to_Int_Dictionary.pkl")
+    return DATA
+    
     #print(d)
     #print(len(x_data[0]))   
     #print(len(y_data))         
